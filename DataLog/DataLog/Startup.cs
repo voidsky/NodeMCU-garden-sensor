@@ -41,3 +41,5 @@ namespace DataLog
         }
     }
 }
+
+// Dummy test
