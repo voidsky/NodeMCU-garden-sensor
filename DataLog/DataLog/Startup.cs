@@ -8,8 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using DataLog.Models;
 using Microsoft.EntityFrameworkCore;
+using ApplicationCore.Interfaces;
+using Infrastructure.Data;
 
 namespace DataLog
 {
@@ -25,7 +26,16 @@ namespace DataLog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            // Use SQL Database if in Azure, otherwise, use SQLite
+            services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Automatically perform database migration
+            services.BuildServiceProvider().GetService<DataContext>().Database.Migrate();
+
+            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
+
             services.AddMvc();
         }
 
@@ -41,3 +51,5 @@ namespace DataLog
         }
     }
 }
+
+// add-migration -Project Infrastructure -OutputDir "Data/Migrations"

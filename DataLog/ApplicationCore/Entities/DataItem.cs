@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DataLog.Models
+namespace ApplicationCore.Entities
 {
-    public class DataItem
+    public class DataItem : BaseEntity
     {
-        public long Id { get; set; }
         public string DataName { get; set; }
         public string DataValue { get; set; }
         public DateTime ReceivedDate { get; set; }
